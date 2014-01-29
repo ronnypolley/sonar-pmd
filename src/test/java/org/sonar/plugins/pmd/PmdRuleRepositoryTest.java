@@ -28,7 +28,6 @@ import org.sonar.api.platform.ServerFileSystem;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.XMLRuleParser;
 import org.sonar.test.TestUtils;
-import org.sonar.test.i18n.RuleRepositoryTestHelper;
 
 import java.io.File;
 import java.util.Arrays;
@@ -90,11 +89,12 @@ public class PmdRuleRepositoryTest {
     assertThat(xpathRule.getParam("xpath").getType()).isEqualTo(PropertyType.TEXT.name());
   }
 
-  @Test
-  public void should_provide_a_name_and_description_for_each_rule() {
-    List<Rule> rules = RuleRepositoryTestHelper.createRulesWithNameAndDescription("pmd", repository);
+//  @Test
+//  public void should_provide_a_name_and_description_for_each_rule() {
+//    List<Rule> rules = RuleRepositoryTestHelper.createRulesWithNameAndDescription("pmd", repository);
+//
+//    assertThat(rules).onProperty("name").excludes(null, "");
+//    assertThat(rules).onProperty("description").excludes(null, "");
+//  }
 
-    assertThat(rules).onProperty("name").excludes(null, "");
-    assertThat(rules).onProperty("description").excludes(null, "");
-  }
 }
