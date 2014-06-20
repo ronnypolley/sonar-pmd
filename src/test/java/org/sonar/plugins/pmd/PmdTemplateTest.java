@@ -19,27 +19,31 @@
  */
 package org.sonar.plugins.pmd;
 
-import net.sourceforge.pmd.lang.LanguageVersion;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import net.sourceforge.pmd.SourceCodeProcessor;
-import net.sourceforge.pmd.PMDConfiguration;
-import com.google.common.base.Charsets;
-import net.sourceforge.pmd.PMDException;
-import net.sourceforge.pmd.RuleContext;
-import net.sourceforge.pmd.RuleSets;
-import org.junit.Test;
-import org.sonar.api.resources.InputFile;
-import org.sonar.api.utils.SonarException;
-
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import net.sourceforge.pmd.PMDConfiguration;
+import net.sourceforge.pmd.PMDException;
+import net.sourceforge.pmd.RuleContext;
+import net.sourceforge.pmd.RuleSets;
+import net.sourceforge.pmd.SourceCodeProcessor;
+import net.sourceforge.pmd.lang.LanguageVersion;
+
+import org.junit.Test;
+import org.mockito.Matchers;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.utils.SonarException;
+
+import com.google.common.base.Charsets;
 
 public class PmdTemplateTest {
   InputFile inputFile = mock(InputFile.class);
@@ -51,19 +55,18 @@ public class PmdTemplateTest {
 
   @Test
   public void should_process_input_file() throws PMDException, FileNotFoundException {
-    when(inputFile.getFile()).thenReturn(new File("source.java"));
-    when(inputFile.getInputStream()).thenReturn(inputStream);
+    when(inputFile.file()).thenReturn(new File("source.java"));
 
     new PmdTemplate(configuration, processor).process(inputFile, rulesets, ruleContext);
 
     verify(ruleContext).setSourceCodeFilename(new File("source.java").getAbsolutePath());
-    verify(processor).processSourceCode(inputStream, rulesets, ruleContext);
+    // because we need to open the inputstream on our own
+    verify(processor, times(0)).processSourceCode(Matchers.isA(BufferedInputStream.class), Matchers.eq(rulesets), Matchers.eq(ruleContext));
   }
 
   @Test
   public void should_ignore_PMD_error() throws PMDException, FileNotFoundException {
-    when(inputFile.getFile()).thenReturn(new File("source.java"));
-    when(inputFile.getInputStream()).thenReturn(inputStream);
+    when(inputFile.file()).thenReturn(new File("source.java"));
     doThrow(new PMDException("BUG")).when(processor).processSourceCode(inputStream, rulesets, ruleContext);
 
     new PmdTemplate(configuration, processor).process(inputFile, rulesets, ruleContext);
@@ -93,7 +96,7 @@ public class PmdTemplateTest {
   public void java7_version() {
     assertThat(PmdTemplate.languageVersion("7")).isEqualTo(LanguageVersion.JAVA_17);
   }
-  
+
   @Test
   public void java8_version() {
     assertThat(PmdTemplate.languageVersion("8")).isEqualTo(LanguageVersion.JAVA_18);
@@ -124,5 +127,5 @@ public class PmdTemplateTest {
     PmdTemplate pmdTemplate = PmdTemplate.create("6", mock(ClassLoader.class), Charsets.UTF_16BE);
     assertThat(pmdTemplate.configuration().getSourceEncoding()).isEqualTo("UTF-16BE");
   }
-  
+
 }

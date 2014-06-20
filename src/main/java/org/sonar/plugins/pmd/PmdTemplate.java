@@ -19,10 +19,13 @@
  */
 package org.sonar.plugins.pmd;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Functions;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.io.Closeables;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.util.Map;
+
 import net.sourceforge.pmd.PMDConfiguration;
 import net.sourceforge.pmd.PMDException;
 import net.sourceforge.pmd.RuleContext;
@@ -30,18 +33,19 @@ import net.sourceforge.pmd.RuleSets;
 import net.sourceforge.pmd.SourceCodeProcessor;
 import net.sourceforge.pmd.lang.Language;
 import net.sourceforge.pmd.lang.LanguageVersion;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.api.resources.InputFile;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.utils.SonarException;
 
-import java.io.File;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.util.Map;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Functions;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.io.Closeables;
 
 public class PmdTemplate {
-  
+
   private static final Logger LOG = LoggerFactory.getLogger(PmdTemplate.class);
 
   private static final Map<String, String> JAVA_VERSIONS = ImmutableMap.<String, String>builder()
@@ -53,8 +57,8 @@ public class PmdTemplate {
     .put("8", "1.8")
     .build();
 
-  private SourceCodeProcessor processor;
-  private PMDConfiguration configuration;
+  private final SourceCodeProcessor processor;
+  private final PMDConfiguration configuration;
 
   public static PmdTemplate create(String javaVersion, ClassLoader classloader, Charset charset) {
     PMDConfiguration configuration = new PMDConfiguration();
@@ -77,11 +81,11 @@ public class PmdTemplate {
   }
 
   public void process(InputFile inputFile, RuleSets rulesets, RuleContext ruleContext) {
-    File file = inputFile.getFile();
+    File file = inputFile.file();
     ruleContext.setSourceCodeFilename(file.getAbsolutePath());
     InputStream inputStream = null;
     try {
-      inputStream = inputFile.getInputStream();
+      inputStream = new BufferedInputStream(new FileInputStream(file));
       processor.processSourceCode(inputStream, rulesets, ruleContext);
     } catch (PMDException e) {
       LOG.error("Fail to execute PMD. Following file is ignored: " + file, e.getCause());

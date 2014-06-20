@@ -19,15 +19,16 @@
  */
 package org.sonar.plugins.pmd;
 
-import com.google.common.collect.Lists;
+import java.io.File;
+import java.util.List;
+
 import org.sonar.api.platform.ServerFileSystem;
-import org.sonar.api.resources.Java;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RuleRepository;
 import org.sonar.api.rules.XMLRuleParser;
+import org.sonar.plugins.java.Java;
 
-import java.io.File;
-import java.util.List;
+import com.google.common.collect.Lists;
 
 public final class PmdRuleRepository extends RuleRepository {
   private final ServerFileSystem fileSystem;

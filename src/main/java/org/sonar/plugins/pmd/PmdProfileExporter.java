@@ -19,9 +19,14 @@
  */
 package org.sonar.plugins.pmd;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sourceforge.pmd.lang.Language;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.jdom.CDATA;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -29,19 +34,15 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.sonar.api.profiles.ProfileExporter;
 import org.sonar.api.profiles.RulesProfile;
-import org.sonar.api.resources.Java;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.ActiveRuleParam;
 import org.sonar.api.utils.SonarException;
+import org.sonar.plugins.java.Java;
 import org.sonar.plugins.pmd.xml.PmdProperty;
 import org.sonar.plugins.pmd.xml.PmdRule;
 import org.sonar.plugins.pmd.xml.PmdRuleset;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.annotations.VisibleForTesting;
 
 public class PmdProfileExporter extends ProfileExporter {
   public PmdProfileExporter() {
@@ -71,7 +72,7 @@ public class PmdProfileExporter extends ProfileExporter {
       if (activeRule.getRule().getRepositoryKey().equals(repositoryKey)) {
         String configKey = activeRule.getRule().getConfigKey();
         PmdRule rule = new PmdRule(configKey, PmdLevelUtils.toLevel(activeRule.getSeverity()));
-        if ((activeRule.getActiveRuleParams() != null) && !activeRule.getActiveRuleParams().isEmpty()) {
+        if (activeRule.getActiveRuleParams() != null && !activeRule.getActiveRuleParams().isEmpty()) {
           List<PmdProperty> properties = new ArrayList<PmdProperty>();
           for (ActiveRuleParam activeRuleParam : activeRule.getActiveRuleParams()) {
             properties.add(new PmdProperty(activeRuleParam.getRuleParam().getKey(), activeRuleParam.getValue()));

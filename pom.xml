@@ -57,10 +57,10 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.sonar</groupId>
-      <artifactId>sonar-java-api</artifactId>
+      <groupId>org.codehaus.sonar-plugins.java</groupId>
+      <artifactId>sonar-java-plugin</artifactId>
       <scope>provided</scope>
-      <version>${sonar.version}</version>
+      <version>${sonar-java.version}</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.sonar</groupId>
@@ -188,7 +188,7 @@
               <rules>
                 <requireFilesSize>
                   <maxsize>6000000</maxsize>
-                  <minsize>5000000</minsize>
+                  <minsize>1000000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                   </files>

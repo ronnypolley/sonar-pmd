@@ -19,11 +19,13 @@
  */
 package org.sonar.plugins.pmd;
 
-import com.google.common.collect.ImmutableList;
+import java.util.List;
+
 import org.sonar.api.SonarPlugin;
 import org.sonar.api.config.PropertyDefinition;
+import org.sonar.api.config.Settings;
 
-import java.util.List;
+import com.google.common.collect.ImmutableList;
 
 public class PmdPlugin extends SonarPlugin {
 
@@ -43,7 +45,8 @@ public class PmdPlugin extends SonarPlugin {
       PmdUnitTestsRuleRepository.class,
       PmdProfileExporter.class,
       PmdProfileImporter.class,
-      PmdViolationToRuleViolation.class);
+      PmdViolationToRuleViolation.class,
+      Settings.class);
   }
 
 }

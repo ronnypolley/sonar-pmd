@@ -19,6 +19,11 @@
  */
 package org.sonar.plugins.pmd;
 
+import java.io.Reader;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -27,20 +32,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.profiles.ProfileImporter;
 import org.sonar.api.profiles.RulesProfile;
-import org.sonar.api.resources.Java;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RuleFinder;
 import org.sonar.api.rules.RuleQuery;
 import org.sonar.api.utils.ValidationMessages;
+import org.sonar.plugins.java.Java;
 import org.sonar.plugins.pmd.xml.PmdProperty;
 import org.sonar.plugins.pmd.xml.PmdRule;
 import org.sonar.plugins.pmd.xml.PmdRuleset;
-
-import javax.annotation.Nullable;
-
-import java.io.Reader;
-import java.util.List;
 
 public class PmdProfileImporter extends ProfileImporter {
 

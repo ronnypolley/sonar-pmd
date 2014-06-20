@@ -19,29 +19,27 @@
  */
 package org.sonar.plugins.pmd;
 
-import org.junit.rules.ExpectedException;
-
-import org.junit.Rule;
-
-import org.sonar.api.utils.XmlParserException;
-
-import com.google.common.collect.Iterators;
-import net.sourceforge.pmd.RuleViolation;
-import net.sourceforge.pmd.Report;
-import org.junit.Before;
-import org.junit.Test;
-import org.sonar.api.batch.SensorContext;
-import org.sonar.api.profiles.RulesProfile;
-import org.sonar.api.resources.Java;
-import org.sonar.api.resources.Project;
-import org.sonar.api.rules.Violation;
-
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+import net.sourceforge.pmd.Report;
+import net.sourceforge.pmd.RuleViolation;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.sonar.api.batch.SensorContext;
+import org.sonar.api.profiles.RulesProfile;
+import org.sonar.api.resources.Project;
+import org.sonar.api.rules.Violation;
+import org.sonar.api.utils.XmlParserException;
+import org.sonar.plugins.java.Java;
+
+import com.google.common.collect.Iterators;
 
 public class PmdSensorTest {
   PmdSensor pmdSensor;

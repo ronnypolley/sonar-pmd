@@ -19,9 +19,14 @@
  */
 package org.sonar.plugins.pmd;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
+
 import net.sourceforge.pmd.Report;
 import net.sourceforge.pmd.renderers.Renderer;
 import net.sourceforge.pmd.renderers.XMLRenderer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.BatchExtension;
@@ -29,71 +34,72 @@ import org.sonar.api.config.Settings;
 import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.utils.SonarException;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-
 public class PmdConfiguration implements BatchExtension {
-  private static final Logger LOG = LoggerFactory.getLogger(PmdConfiguration.class);
+	private static final Logger LOG = LoggerFactory
+			.getLogger(PmdConfiguration.class);
 
-  public static final String PROPERTY_GENERATE_XML = "sonar.pmd.generateXml";
-  public static final String PMD_RESULT_XML = "pmd-result.xml";
+	public static final String PROPERTY_GENERATE_XML = "sonar.pmd.generateXml";
+	public static final String PMD_RESULT_XML = "pmd-result.xml";
 
-  private final ProjectFileSystem projectFileSystem;
-  private final Settings settings;
+	private final ProjectFileSystem projectFileSystem;
+	private final Settings settings;
 
-  public PmdConfiguration(ProjectFileSystem projectFileSystem, Settings settings) {
-    this.projectFileSystem = projectFileSystem;
-    this.settings = settings;
-  }
+	public PmdConfiguration(ProjectFileSystem projectFileSystem,
+			Settings settings) {
+		this.projectFileSystem = projectFileSystem;
+		this.settings = settings;
+	}
 
-  public File getTargetXMLReport() {
-    if (settings.getBoolean(PROPERTY_GENERATE_XML)) {
-      return projectFileSystem.resolvePath(PMD_RESULT_XML);
-    }
-    return null;
-  }
+	public File getTargetXMLReport() {
+		if (settings.getBoolean(PROPERTY_GENERATE_XML)) {
+			return projectFileSystem.resolvePath(PMD_RESULT_XML);
+		}
+		return null;
+	}
 
-  public File dumpXmlRuleSet(String repositoryKey, String rulesXml) {
-    try {
-      File configurationFile = projectFileSystem.writeToWorkingDirectory(rulesXml, repositoryKey + ".xml");
+	public File dumpXmlRuleSet(String repositoryKey, String rulesXml) {
+		try {
+			File configurationFile = projectFileSystem.writeToWorkingDirectory(
+					rulesXml, repositoryKey + ".xml");
 
-      LOG.info("PMD configuration: " + configurationFile.getAbsolutePath());
+			LOG.info("PMD configuration: "
+					+ configurationFile.getAbsolutePath());
 
-      return configurationFile;
-    } catch (IOException e) {
-      throw new SonarException("Fail to save the PMD configuration", e);
-    }
-  }
+			return configurationFile;
+		} catch (IOException e) {
+			throw new SonarException("Fail to save the PMD configuration", e);
+		}
+	}
 
-  public File dumpXmlReport(Report report) {
-    if (!settings.getBoolean(PROPERTY_GENERATE_XML)) {
-      return null;
-    }
+	public File dumpXmlReport(Report report) {
+		if (!settings.getBoolean(PROPERTY_GENERATE_XML)) {
+			return null;
+		}
 
-    try {
-      String reportAsString = reportToString(report);
+		try {
+			String reportAsString = reportToString(report);
 
-      File reportFile = projectFileSystem.writeToWorkingDirectory(reportAsString, PMD_RESULT_XML);
+			File reportFile = projectFileSystem.writeToWorkingDirectory(
+					reportAsString, PMD_RESULT_XML);
 
-      LOG.info("PMD output report: " + reportFile.getAbsolutePath());
+			LOG.info("PMD output report: " + reportFile.getAbsolutePath());
 
-      return reportFile;
-    } catch (IOException e) {
-      throw new SonarException("Fail to save the PMD report", e);
-    }
-  }
+			return reportFile;
+		} catch (IOException e) {
+			throw new SonarException("Fail to save the PMD report", e);
+		}
+	}
 
-  private static String reportToString(Report report) throws IOException {
-    StringWriter output = new StringWriter();
+	private static String reportToString(Report report) throws IOException {
+		StringWriter output = new StringWriter();
 
-    Renderer xmlRenderer = new XMLRenderer();
-    xmlRenderer.setWriter(output);
-    xmlRenderer.start();
-    xmlRenderer.renderFileReport(report);
-    xmlRenderer.end();
+		Renderer xmlRenderer = new XMLRenderer();
+		xmlRenderer.setWriter(output);
+		xmlRenderer.start();
+		xmlRenderer.renderFileReport(report);
+		xmlRenderer.end();
 
-    return output.toString();
-  }
+		return output.toString();
+	}
 
 }

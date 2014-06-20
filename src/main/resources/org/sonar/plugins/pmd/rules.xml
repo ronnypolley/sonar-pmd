@@ -9,6 +9,12 @@
   <rule key="GuardDebugLogging">
     <priority>MAJOR</priority>
     <configKey>rulesets/java/logging-jakarta-commons.xml/GuardDebugLogging</configKey>
+    <param key="violationSuppressRegex" type="STRING">
+    	<defaultValue></defaultValue>
+    </param>
+    <param key="violationSuppressXPath" type="STRING">
+    	<defaultValue></defaultValue>
+    </param>
   </rule>
 
   <rule key="GenericsNaming">
@@ -1440,7 +1446,7 @@
       <defaultValue>false</defaultValue>
     </param>
   </rule>
-  
+
   <rule key="AvoidBranchingStatementAsLastInLoop">
     <priority>MAJOR</priority>
     <configKey><![CDATA[rulesets/java/basic.xml/AvoidBranchingStatementAsLastInLoop]]></configKey>

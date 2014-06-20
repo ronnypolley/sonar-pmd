@@ -19,34 +19,42 @@
  */
 package org.sonar.plugins.pmd;
 
+import java.util.Iterator;
+
 import net.sourceforge.pmd.Report;
 import net.sourceforge.pmd.RuleViolation;
+
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.profiles.RulesProfile;
-import org.sonar.api.resources.Java;
 import org.sonar.api.resources.Project;
 import org.sonar.api.rules.Violation;
 import org.sonar.api.utils.XmlParserException;
-
-import java.util.Iterator;
+import org.sonar.plugins.java.Java;
 
 public class PmdSensor implements Sensor {
   private final RulesProfile profile;
   private final PmdExecutor executor;
   private final PmdViolationToRuleViolation pmdViolationToRuleViolation;
 
-  public PmdSensor(RulesProfile profile, PmdExecutor executor, PmdViolationToRuleViolation pmdViolationToRuleViolation) {
+  public PmdSensor(RulesProfile profile, PmdExecutor executor,
+    PmdViolationToRuleViolation pmdViolationToRuleViolation) {
     this.profile = profile;
     this.executor = executor;
     this.pmdViolationToRuleViolation = pmdViolationToRuleViolation;
   }
 
+  @Override
   public boolean shouldExecuteOnProject(Project project) {
-    return (!project.getFileSystem().mainFiles(Java.KEY).isEmpty() && !profile.getActiveRulesByRepository(PmdConstants.REPOSITORY_KEY).isEmpty())
-      || (!project.getFileSystem().testFiles(Java.KEY).isEmpty() && !profile.getActiveRulesByRepository(PmdConstants.TEST_REPOSITORY_KEY).isEmpty());
+    return !project.getFileSystem().mainFiles(Java.KEY).isEmpty()
+      && !profile.getActiveRulesByRepository(
+        PmdConstants.REPOSITORY_KEY).isEmpty()
+        || !project.getFileSystem().testFiles(Java.KEY).isEmpty()
+        && !profile.getActiveRulesByRepository(
+          PmdConstants.TEST_REPOSITORY_KEY).isEmpty();
   }
 
+  @Override
   public void analyse(Project project, SensorContext context) {
     try {
       Report report = executor.execute();
@@ -56,11 +64,13 @@ public class PmdSensor implements Sensor {
     }
   }
 
-  private void reportViolations(Iterator<RuleViolation> violations, SensorContext context) {
+  private void reportViolations(Iterator<RuleViolation> violations,
+    SensorContext context) {
     while (violations.hasNext()) {
       RuleViolation pmdViolation = violations.next();
 
-      Violation violation = pmdViolationToRuleViolation.toViolation(pmdViolation, context);
+      Violation violation = pmdViolationToRuleViolation.toViolation(
+        pmdViolation, context);
       if (null != violation) {
         context.saveViolation(violation);
       }

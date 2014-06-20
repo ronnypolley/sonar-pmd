@@ -19,13 +19,13 @@
  */
 package org.sonar.plugins.pmd;
 
-import org.sonar.api.resources.Java;
+import java.io.InputStream;
+import java.util.List;
+
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RuleRepository;
 import org.sonar.api.rules.XMLRuleParser;
-
-import java.io.InputStream;
-import java.util.List;
+import org.sonar.plugins.java.Java;
 
 public final class PmdUnitTestsRuleRepository extends RuleRepository {
   private final XMLRuleParser xmlRuleParser;
